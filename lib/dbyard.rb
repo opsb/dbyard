@@ -9,14 +9,14 @@ require 'json'
 DB = Sequel.connect(ENV['DBYARD_DB_URI'])
 
 get '/' do
-  "dbyard for #{ENV['DBYARD_DB_HOST']}"
+  erb :index
 end
 
-get '/create' do
+post '/create' do
   connection_command create_db
 end
 
-get '/create.json' do
+post '/create.json' do
   content_type :json
   create_db.to_json
 end
@@ -35,11 +35,11 @@ def create_db
   schema = "s" + uuid
   username = "u" + uuid[0,14]
   password = "p" + uuid
-  dbrun("create schema #{schema}")
-  dbrun("create user #{username} identified by password '#{password}'")
+  DB.run("create schema #{schema}")
+  DB.run("create user #{username} identified by password '#{password}'")
   permissions = "alter, create, create temporary tables, delete, drop, index, insert, lock tables, select, update"
-  dbrun("grant #{permissions} on #{schema}.* to #{username}@'%' identified by '#{password}'")
-  dbrun("flush privileges")
+  DB.run("grant #{permissions} on #{schema}.* to #{username}@'%' identified by '#{password}'")
+  DB.run("flush privileges")
   {
     :username => username,
     :password => password,
@@ -47,7 +47,15 @@ def create_db
   }
 end
 
-def dbrun(command)
-  puts command
-  DB.run(command)
-end
+__END__
+
+@@ index
+<h1>DByard</h1>
+<form method="post" url="/create">
+  <input type="submit" value="Make me a database" />
+</form>
+
+
+
+
+
