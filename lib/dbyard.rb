@@ -21,16 +21,29 @@ post '/create.json' do
   create_db.to_json
 end
 
+delete '/:schema' do
+  status 200  
+  begin
+    config = config_from_schema(params[:schema])
+    DB.run("drop schema #{config[:schema]}")
+    DB.run("drop user #{config[:username]}")
+  rescue Exception => e
+    puts e
+    status 404
+  end
+end
+
 post '/' do
   connection_command create_db
 end
 
 def connection_command(config)
-  "mysql -u #{config[:username]} --password=#{config[:password]} -h #{ENV['DBYARD_DB_HOST']} #{config[:schema]}"
+  "mysql -u #{config[:username]} --password=#{config[:password]} -h #{ENV['DBYARD_DB_HOST']} #{config[:schema]}\n"
 end
 
 def create_db
   config = create_config
+  puts config
   DB.run("create schema #{config[:schema]}")
   DB.run("create user #{config[:username]} identified by password '#{config[:password]}'")
   permissions = "alter, create, create temporary tables, delete, drop, index, insert, lock tables, select, update"
@@ -50,6 +63,14 @@ def create_config
     :password => password,
     :schema => schema
   }  
+end
+
+def config_from_schema(schema)
+  {
+    :username => "u" + schema.sub('s','')[0,14],
+    :password => schema.sub('^s', 'p'),
+    :schema => schema
+  }
 end
 
 __END__
