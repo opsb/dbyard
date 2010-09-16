@@ -8,7 +8,7 @@ require 'sequel'
 DB = Sequel.connect(ENV['DBYARD_DB_URI'])
 
 get '/' do
-  "dbyard"
+  "dbyard for #{ENV['DBYARD_DB_HOST']}"
 end
 
 get '/create' do
@@ -30,7 +30,7 @@ def create_db
   permissions = "alter, create, create temporary tables, delete, drop, index, insert, lock tables, select, update"
   dbrun("grant #{permissions} on #{schema}.* to #{username}@'%' identified by '#{password}'")
   dbrun("flush privileges")
-  "mysql -u #{username} --password=#{password} -h #{request.host} #{schema}"
+  "mysql -u #{username} --password=#{password} -h #{ENV['DBYARD_DB_HOST']} #{schema}"
 end
 
 def dbrun(command)
