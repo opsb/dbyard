@@ -12,13 +12,18 @@ get '/' do
   erb :index
 end
 
-post '/create' do
-  connection_command create_db
+post '/' do
+  config = create_db
+  redirect "/#{config[:schema]}"
 end
 
-post '/create.json' do
+post '/.json' do
   content_type :json
   create_db.to_json
+end
+
+get '/:schema' do
+  connection_command config_from_schema(params[:schema])
 end
 
 delete '/:schema' do
@@ -76,7 +81,7 @@ __END__
 
 @@ index
 <h1>DByard</h1>
-<form method="post" action="/create">
+<form method="post">
   <input type="submit" value="Make me a database" />
 </form>
 
