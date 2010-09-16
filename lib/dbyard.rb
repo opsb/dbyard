@@ -30,21 +30,26 @@ def connection_command(config)
 end
 
 def create_db
+  config = create_config
+  DB.run("create schema #{config[:schema]}")
+  DB.run("create user #{config[:username]} identified by password '#{config[:password]}'")
+  permissions = "alter, create, create temporary tables, delete, drop, index, insert, lock tables, select, update"
+  DB.run("grant #{permissions} on #{config[:schema]}.* to #{config[:username]}@'%' identified by '#{config[:password]}'")
+  DB.run("flush privileges")
+  config
+end
+
+def create_config
   uuid = Digest::SHA1.hexdigest(Time.now.to_s)
   puts uuid
   schema = "s" + uuid
   username = "u" + uuid[0,14]
   password = "p" + uuid
-  DB.run("create schema #{schema}")
-  DB.run("create user #{username} identified by password '#{password}'")
-  permissions = "alter, create, create temporary tables, delete, drop, index, insert, lock tables, select, update"
-  DB.run("grant #{permissions} on #{schema}.* to #{username}@'%' identified by '#{password}'")
-  DB.run("flush privileges")
   {
     :username => username,
     :password => password,
     :schema => schema
-  }
+  }  
 end
 
 __END__
