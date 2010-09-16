@@ -4,6 +4,7 @@ Bundler.setup
 require 'sinatra'
 require 'digest'
 require 'sequel'
+require 'json'
 
 DB = Sequel.connect(ENV['DBYARD_DB_URI'])
 
@@ -13,6 +14,11 @@ end
 
 get '/create' do
   connection_command create_db
+end
+
+get '/create.json' do
+  content_type :json
+  create_db.to_json
 end
 
 post '/' do
