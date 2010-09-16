@@ -76,7 +76,7 @@ __END__
 
 @@ index
 <h1>DByard</h1>
-<form method="post" url="/create">
+<form method="post" action="/create">
   <input type="submit" value="Make me a database" />
 </form>
 
