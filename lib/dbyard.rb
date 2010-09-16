@@ -12,11 +12,15 @@ get '/' do
 end
 
 get '/create' do
-  create_db
+  connection_command create_db
 end
 
 post '/' do
-  create_db
+  connection_command create_db
+end
+
+def connection_command(config)
+  "mysql -u #{config[:username]} --password=#{config[:password]} -h #{ENV['DBYARD_DB_HOST']} #{config[:schema]}"
 end
 
 def create_db
@@ -30,7 +34,11 @@ def create_db
   permissions = "alter, create, create temporary tables, delete, drop, index, insert, lock tables, select, update"
   dbrun("grant #{permissions} on #{schema}.* to #{username}@'%' identified by '#{password}'")
   dbrun("flush privileges")
-  "mysql -u #{username} --password=#{password} -h #{ENV['DBYARD_DB_HOST']} #{schema}"
+  {
+    :username => username,
+    :password => password,
+    :schema => schema
+  }
 end
 
 def dbrun(command)
