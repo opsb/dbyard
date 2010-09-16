@@ -22,6 +22,10 @@ post '/.json' do
   create_db.to_json
 end
 
+get '/:schema.json' do
+  config_from_schema(params[:schema]).to_json
+end
+
 get '/:schema' do
   connection_command config_from_schema(params[:schema])
 end
