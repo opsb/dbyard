@@ -61,7 +61,7 @@ def create_db
 end
 
 def create_config
-  uuid = Digest::SHA1.hexdigest(Time.now.to_s)
+  uuid = Digest::SHA1.hexdigest(Time.now.to_s + rand(1000000).to_s)
   puts uuid
   schema = "s" + uuid
   username = "u" + uuid[0,14]
