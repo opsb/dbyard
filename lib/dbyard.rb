@@ -12,25 +12,25 @@ get '/' do
   erb :index
 end
 
-post '/.json' do
+post '/schemas.json' do
   content_type :json
   create_db.to_json
 end
 
-post '/' do
+post '/schemas' do
   config = create_db
-  redirect "/#{config[:schema]}"
+  redirect "/schemas/#{config[:schema]}"
 end
 
-get '/:schema.json' do
+get '/schemas/:schema.json' do
   config_from_schema(params[:schema]).to_json
 end
 
-get '/:schema' do
+get '/schemas/:schema' do
   connection_command config_from_schema(params[:schema])
 end
 
-delete '/:schema' do
+delete '/schemas/:schema' do
   status 200  
   begin
     config = config_from_schema(params[:schema])
@@ -85,7 +85,7 @@ __END__
 
 @@ index
 <h1>DByard</h1>
-<form method="post">
+<form method="post" action="/schemas">
   <input type="submit" value="Make me a database" />
 </form>
 <pre>
