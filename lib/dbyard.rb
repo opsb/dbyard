@@ -53,7 +53,7 @@ end
 def create_db
   config = create_config
   DB.run("create schema #{config[:schema]}")
-  DB.run("create user #{config[:username]} identified by password '#{config[:password]}'")
+  DB.run("create user '#{config[:username]}' identified by password '#{config[:password]}'")
   permissions = "alter, create, create temporary tables, delete, drop, index, insert, lock tables, select, update"
   DB.run("grant #{permissions} on #{config[:schema]}.* to #{config[:username]}@'%' identified by '#{config[:password]}'")
   DB.run("flush privileges")
@@ -61,10 +61,9 @@ def create_db
 end
 
 def create_config
-  uuid = Digest::SHA1.hexdigest(Time.now.to_s + rand(1000000).to_s)
-  puts uuid
+  uuid = Digest::SHA1.hexdigest(Time.now.to_s + rand(1000000).to_s)[0,14]
   schema = "s" + uuid
-  username = "u" + uuid[0,14]
+  username = "u" + uuid
   password = "p" + uuid
   {
     :username => username,
@@ -74,10 +73,11 @@ def create_config
 end
 
 def config_from_schema(schema)
+  uuid = schema.sub('s','')
   {
-    :username => "u" + schema.sub('s','')[0,14],
-    :password => schema.sub('^s', 'p'),
-    :schema => schema
+    :username => "u#{uuid}",
+    :password => "p#{uuid}",
+    :schema => "s#{uuid}"
   }
 end
 
