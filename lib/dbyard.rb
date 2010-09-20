@@ -53,7 +53,7 @@ end
 def create_db
   config = create_config
   DB.run("create schema #{config[:schema]}")
-  DB.run("create user '#{config[:username]}' identified by password '#{config[:password]}'")
+  DB.run("create user '#{config[:username]}'@'%' identified by '#{config[:password]}'")
   permissions = "alter, create, create temporary tables, delete, drop, index, insert, lock tables, select, update"
   DB.run("grant #{permissions} on #{config[:schema]}.* to #{config[:username]}@'%' identified by '#{config[:password]}'")
   DB.run("flush privileges")
