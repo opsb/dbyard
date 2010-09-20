@@ -89,7 +89,7 @@ __END__
   <input type="submit" value="Make me a database" />
 </form>
 <pre>
-curl -X POST http://dbyard.com/.json
+curl -X POST http://dbyard.com/schemas.json
 </pre>
 
 
