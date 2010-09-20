@@ -12,14 +12,14 @@ get '/' do
   erb :index
 end
 
-post '/' do
-  config = create_db
-  redirect "/#{config[:schema]}"
-end
-
 post '/.json' do
   content_type :json
   create_db.to_json
+end
+
+post '/' do
+  config = create_db
+  redirect "/#{config[:schema]}"
 end
 
 get '/:schema.json' do
